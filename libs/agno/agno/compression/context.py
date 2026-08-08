@@ -138,6 +138,7 @@ class ContextCompactionManager:
         None  # token budget for preserving user messages; derived from token_limit if not set
     )
     instructions: Optional[str] = None  # custom summarization prompt
+    stats: Dict[str, Any] = field(default_factory=dict)  # runtime stats for display
 
     def __post_init__(self) -> None:
         if self.model is not None:
@@ -253,6 +254,10 @@ class ContextCompactionManager:
             log_debug(
                 f"[COMPACTION] run_response.compaction_state updated: total={run_response.compaction_state.total_compactions}, ids={len(run_response.compaction_state.compacted_message_ids)}"
             )
+
+        # Update stats for display
+        self.stats["messages_compacted"] = self.stats.get("messages_compacted", 0) + len(old_messages)
+        self.stats["tokens_saved"] = self.stats.get("tokens_saved", 0) + tokens_saved
 
         log_debug(f"[COMPACTION] Returning {len(compacted_messages)} compacted messages (sync)")
         return CompactionResult(compacted_messages=compacted_messages, summary=new_summary)
@@ -471,6 +476,10 @@ class ContextCompactionManager:
             log_debug(
                 f"[COMPACTION] Async compaction updated: total={run_response.compaction_state.total_compactions}, ids={len(run_response.compaction_state.compacted_message_ids)}"
             )
+
+        # Update stats for display
+        self.stats["messages_compacted"] = self.stats.get("messages_compacted", 0) + len(old_messages)
+        self.stats["tokens_saved"] = self.stats.get("tokens_saved", 0) + tokens_saved
 
         log_debug(f"[COMPACTION] Returning {len(compacted_messages)} compacted messages (async)")
         return CompactionResult(compacted_messages=compacted_messages, summary=new_summary)
