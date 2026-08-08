@@ -26,7 +26,7 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from agno.compression.manager import CompressionManager
+    from agno.compression import CompressionManager
 from uuid import uuid4
 
 from pydantic import BaseModel

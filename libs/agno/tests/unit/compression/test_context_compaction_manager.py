@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from agno.compression.context import (
+from agno.compression import (
     SUMMARY_PREFIX,
     CompactionState,
     ContextCompactionManager,
@@ -50,7 +50,7 @@ def _make_manager_with_mock(
 
 def test_default_message_limit_when_no_limits_specified():
     manager = ContextCompactionManager()
-    assert manager.message_limit == 50
+    assert manager.message_limit == 10
     assert manager.token_limit is None
 
 

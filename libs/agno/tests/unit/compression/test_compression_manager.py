@@ -6,7 +6,7 @@ from agno.models.message import Message
 @pytest.mark.asyncio
 async def test_ashould_compress_below_token_limit():
     """Test async should_compress returns False when below token limit."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
     from agno.models.openai import OpenAIChat
 
     model = OpenAIChat(id="gpt-4o")
@@ -24,7 +24,7 @@ async def test_ashould_compress_below_token_limit():
 @pytest.mark.asyncio
 async def test_ashould_compress_above_token_limit():
     """Test async should_compress returns True when above token limit."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
     from agno.models.openai import OpenAIChat
 
     model = OpenAIChat(id="gpt-4o")
@@ -42,7 +42,7 @@ async def test_ashould_compress_above_token_limit():
 @pytest.mark.asyncio
 async def test_ashould_compress_disabled():
     """Test async should_compress returns False when compression disabled."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
     from agno.models.openai import OpenAIChat
 
     model = OpenAIChat(id="gpt-4o")
@@ -59,7 +59,7 @@ async def test_ashould_compress_disabled():
 
 def test_should_compress_below_token_limit():
     """Test sync should_compress returns False when below token limit."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
     from agno.models.openai import OpenAIChat
 
     model = OpenAIChat(id="gpt-4o")
@@ -73,7 +73,7 @@ def test_should_compress_below_token_limit():
 
 def test_should_compress_above_token_limit():
     """Test sync should_compress returns True when above token limit."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
     from agno.models.openai import OpenAIChat
 
     model = OpenAIChat(id="gpt-4o")
@@ -87,7 +87,7 @@ def test_should_compress_above_token_limit():
 
 def test_should_compress_disabled():
     """Test sync should_compress returns False when compression disabled."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [Message(role="user", content="Hello")]
 
@@ -99,7 +99,7 @@ def test_should_compress_disabled():
 
 def test_should_compress_default_count_limit():
     """Test that compress_tool_results_limit defaults to 3 when nothing is set."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     cm = CompressionManager()
     assert cm.compress_tool_results_limit == 3
@@ -113,7 +113,7 @@ def test_should_compress_default_count_limit():
 
 def test_should_compress_count_based_below_limit():
     """Test should_compress with count-based limit below threshold."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [
         Message(role="user", content="Hello"),
@@ -128,7 +128,7 @@ def test_should_compress_count_based_below_limit():
 
 def test_should_compress_count_based_above_limit():
     """Test should_compress with count-based limit above threshold."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [
         Message(role="user", content="Hello"),
@@ -145,7 +145,7 @@ def test_should_compress_count_based_above_limit():
 
 def test_should_compress_excludes_already_compressed():
     """Already compressed messages should not count toward the limit."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [
         Message(role="user", content="Hello"),
@@ -163,7 +163,7 @@ def test_should_compress_excludes_already_compressed():
 @pytest.mark.asyncio
 async def test_ashould_compress_count_based_below_limit():
     """Test async should_compress with count-based limit below threshold."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [
         Message(role="user", content="Hello"),
@@ -182,7 +182,7 @@ async def test_ashould_compress_count_based_below_limit():
 @pytest.mark.asyncio
 async def test_ashould_compress_count_based_above_limit():
     """Test async should_compress with count-based limit above threshold."""
-    from agno.compression.manager import CompressionManager
+    from agno.compression import ToolCompressionManager as CompressionManager
 
     messages = [
         Message(role="user", content="Hello"),

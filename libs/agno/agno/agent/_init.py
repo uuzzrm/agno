@@ -18,7 +18,7 @@ from typing import (
 if TYPE_CHECKING:
     from agno.agent.agent import Agent
 
-from agno.compression.manager import CompressionManager
+from agno.compression import CompressionManager
 from agno.culture.manager import CultureManager
 from agno.db.base import AsyncBaseDb
 from agno.learn.machine import LearningMachine
@@ -198,17 +198,25 @@ def set_session_summary_manager(agent: Agent) -> None:
 
 
 def set_compression_manager(agent: Agent) -> None:
+    """Initialize compression_manager, ensuring mutual exclusivity with compress_tool_results flag."""
+    # Mutual exclusivity check
+    if agent.compress_tool_results and agent.compression_manager is not None:
+        raise ValueError(
+            "Cannot use both compress_tool_results=True and compression_manager together. "
+            "Use compression_manager=CompressionManager(...) for full control."
+        )
+
+    # Auto-create compression_manager if compress_tool_results flag is set
     if agent.compress_tool_results and agent.compression_manager is None:
         agent.compression_manager = CompressionManager(
             model=agent.model,
+            compress_tool_results=True,
+            compact_history=False,  # only tool compression via flag
         )
 
+    # Set model if not already set
     if agent.compression_manager is not None and agent.compression_manager.model is None:
         agent.compression_manager.model = agent.model
-
-    # Check compression flag on the compression manager
-    if agent.compression_manager is not None and agent.compression_manager.compress_tool_results:
-        agent.compress_tool_results = True
 
 
 def _initialize_session_state(

@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from agno.compression.context import CompactionState
+from agno.compression import CompactionState
 from agno.run.agent import RunOutput
 
 

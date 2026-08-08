@@ -11,7 +11,7 @@ from agno.run.team import TeamRunOutput
 from agno.session.summary import SessionSummary
 
 if TYPE_CHECKING:
-    from agno.compression.context import CompactionState
+    from agno.compression import CompactionState
 from agno.utils.log import log_debug, log_warning
 
 

@@ -145,7 +145,7 @@ class ContextCompactionManager:
             self.model = get_model(self.model)
         # Default to message-based limit if neither specified
         if self.message_limit is None and self.token_limit is None:
-            self.message_limit = 50
+            self.message_limit = 10
         # Derive preserve_user_budget as 25% of token_limit if not explicitly set
         if self.preserve_user_budget is None:
             if self.token_limit is not None:
@@ -355,7 +355,7 @@ class ContextCompactionManager:
 
     def _compress_tool_results(self, messages: List[Message], run_metrics: Optional["RunMetrics"]) -> None:
         """Compress large tool results using CompressionManager."""
-        from agno.compression.manager import CompressionManager
+        from agno.compression._tool_compression import CompressionManager
 
         cm = CompressionManager(model=self.model)
         cm.compress(messages, run_metrics)
@@ -506,7 +506,7 @@ class ContextCompactionManager:
 
     async def _acompress_tool_results(self, messages: List[Message], run_metrics: Optional["RunMetrics"]) -> None:
         """Async version of _compress_tool_results()."""
-        from agno.compression.manager import CompressionManager
+        from agno.compression._tool_compression import CompressionManager
 
         cm = CompressionManager(model=self.model)
         await cm.acompress(messages, run_metrics)

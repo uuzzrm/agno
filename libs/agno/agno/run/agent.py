@@ -22,7 +22,7 @@ from agno.utils.media import (
 )
 
 if TYPE_CHECKING:
-    from agno.compression.context import CompactionState
+    from agno.compression import CompactionState
     from agno.session.summary import SessionSummary
 
 
@@ -944,7 +944,7 @@ class RunOutput:
         compaction_data = data.pop("compaction_state", None)
         compaction_state = None
         if compaction_data and isinstance(compaction_data, dict):
-            from agno.compression.context import CompactionState
+            from agno.compression import CompactionState
 
             compaction_state = CompactionState.from_dict(compaction_data)
 

@@ -539,9 +539,9 @@ def _run(
                 # Two-list architecture:
                 #   - messages: canonical list for DB storage (always full history)
                 #   - compacted_messages: compressed view for model (summary + recent)
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     log_debug(f"[RUN-SYNC] Pre-loop compaction check: {len(run_messages.messages)} messages")
-                    compaction_result = agent.context_compaction_manager.compact(
+                    compaction_result = agent.compression_manager.compact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -567,7 +567,9 @@ def _run(
                     response_format=response_format,
                     run_response=run_response,
                     send_media_to_model=agent.send_media_to_model,
-                    compression_manager=agent.compression_manager if agent.compress_tool_results else None,
+                    compression_manager=agent.compression_manager.compression_manager
+                    if agent.compression_manager
+                    else None,
                     compaction_callback=build_compaction_callback(
                         agent,
                         run_messages=run_messages,
@@ -987,9 +989,9 @@ def _run_stream(
                 raise_if_cancelled(run_response.run_id)  # type: ignore
 
                 # 6. Pre-loop compaction: compress history BEFORE first model call
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     messages_before = len(run_messages.messages)
-                    compaction_result = agent.context_compaction_manager.compact(
+                    compaction_result = agent.compression_manager.compact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -1746,9 +1748,9 @@ async def _arun(
                 # Two-list architecture:
                 #   - messages: canonical list for DB storage (always full history)
                 #   - compacted_messages: compressed view for model (summary + recent)
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     log_debug(f"[RUN-ASYNC] Pre-loop compaction check: {len(run_messages.messages)} messages")
-                    compaction_result = await agent.context_compaction_manager.acompact(
+                    compaction_result = await agent.compression_manager.acompact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -1772,7 +1774,9 @@ async def _arun(
                     response_format=response_format,
                     send_media_to_model=agent.send_media_to_model,
                     run_response=run_response,
-                    compression_manager=agent.compression_manager if agent.compress_tool_results else None,
+                    compression_manager=agent.compression_manager.compression_manager
+                    if agent.compression_manager
+                    else None,
                     compaction_callback=await abuild_compaction_callback(
                         agent,
                         run_messages=run_messages,
@@ -2538,9 +2542,9 @@ async def _arun_stream(
                 await araise_if_cancelled(run_response.run_id)  # type: ignore
 
                 # 9. Pre-loop compaction: compress history BEFORE first model call
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     messages_before = len(run_messages.messages)
-                    compaction_result = await agent.context_compaction_manager.acompact(
+                    compaction_result = await agent.compression_manager.acompact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -3852,7 +3856,9 @@ def _continue_run(
                     tool_call_limit=agent.tool_call_limit,
                     run_response=run_response,
                     send_media_to_model=agent.send_media_to_model,
-                    compression_manager=agent.compression_manager if agent.compress_tool_results else None,
+                    compression_manager=agent.compression_manager.compression_manager
+                    if agent.compression_manager
+                    else None,
                     compaction_callback=build_compaction_callback(
                         agent,
                         run_messages=run_messages,
@@ -4087,9 +4093,9 @@ def _continue_run_stream(
                 raise_if_cancelled(run_response.run_id)  # type: ignore
 
                 # 3. Pre-loop compaction: compress history BEFORE model call
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     messages_before = len(run_messages.messages)
-                    compaction_result = agent.context_compaction_manager.compact(
+                    compaction_result = agent.compression_manager.compact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -5072,7 +5078,9 @@ async def _acontinue_run(
                     tool_call_limit=agent.tool_call_limit,
                     run_response=run_response,
                     send_media_to_model=agent.send_media_to_model,
-                    compression_manager=agent.compression_manager if agent.compress_tool_results else None,
+                    compression_manager=agent.compression_manager.compression_manager
+                    if agent.compression_manager
+                    else None,
                     compaction_callback=await abuild_compaction_callback(
                         agent,
                         run_messages=run_messages,
@@ -5567,9 +5575,9 @@ async def _acontinue_run_stream(
                 await araise_if_cancelled(run_response.run_id)  # type: ignore
 
                 # 8. Pre-loop compaction: compress history BEFORE model call
-                if agent.context_compaction_manager is not None:
+                if agent.compression_manager is not None:
                     messages_before = len(run_messages.messages)
-                    compaction_result = await agent.context_compaction_manager.acompact(
+                    compaction_result = await agent.compression_manager.acompact_history(
                         run_messages.messages,
                         run_response=run_response,
                         run_metrics=run_response.metrics,
@@ -6502,7 +6510,7 @@ def build_compaction_callback(
     the threshold. If compaction triggers, returns the new shorter message list;
     the model loop rebinds its local variable from the return value.
     """
-    compaction_manager = agent.context_compaction_manager
+    compaction_manager = agent.compression_manager.context_compaction_manager if agent.compression_manager else None
     if compaction_manager is None:
         return None
 
@@ -6535,7 +6543,7 @@ async def abuild_compaction_callback(
     run_response: RunOutput,
 ) -> Optional[Callable[[], Awaitable[Optional[List[Message]]]]]:
     """Async variant of :func:`build_compaction_callback`."""
-    compaction_manager = agent.context_compaction_manager
+    compaction_manager = agent.compression_manager.context_compaction_manager if agent.compression_manager else None
     if compaction_manager is None:
         return None
 

@@ -26,7 +26,7 @@ from uuid import uuid4
 from pydantic import BaseModel
 
 from agno.agent import Agent
-from agno.compression.manager import CompressionManager
+from agno.compression import CompressionManager
 from agno.db.base import AsyncBaseDb, BaseDb
 from agno.eval.base import BaseEval
 from agno.filters import FilterExpr

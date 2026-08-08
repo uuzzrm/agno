@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from agno.compression.context import (
+from agno.compression import (
     SUMMARY_PREFIX,
     CompactionState,
     create_summary_message,

@@ -4,7 +4,7 @@ from time import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 if TYPE_CHECKING:
-    from agno.compression.context import CompactionState
+    from agno.compression import CompactionState
 
 from pydantic import BaseModel
 
